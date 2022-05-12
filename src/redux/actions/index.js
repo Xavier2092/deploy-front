@@ -1,4 +1,3 @@
-import createPalette from "@mui/material/styles/createPalette";
 import axios from "axios";
 import {
   SEARCH_PELIS,
@@ -27,14 +26,13 @@ import {
   ADD_COMMENT,
   UPDATE_COMMENT,
   GET_COMMENTS,
-  DELETE_COMMENT
+  DELETE_COMMENT,
 } from "./actionstype";
+import { SERVER_BACK } from "../../paths/path";
 
 export function getMovies() {
-  //obtener todos los videojuegos
   return async function (dispatch) {
-    let json = await axios.get("https://back-cindie.herokuapp.com/films");
-
+    let json = await axios.get(`${SERVER_BACK}/films`);
     try {
       return dispatch({
         type: GET_MOVIES,
@@ -57,8 +55,7 @@ export function sortName(payload) {
 export function getGenres() {
   //obtener generos
   return async function (dispatch) {
-    let info = await axios.get("https://back-cindie.herokuapp.com/genres");
-
+    let info = await axios.get(`${SERVER_BACK}/genres`);
     return dispatch({
       type: GET_GENRES,
       payload: info.data,
@@ -68,10 +65,8 @@ export function getGenres() {
 
 export function postMovie(movieForm) {
   return async () => {
-    const response = (
-      await axios.post("https://back-cindie.herokuapp.com/films", movieForm)
-    )?.data;
-    console.log("RESPUESTA: ", response);
+    const response = (await axios.post(`${SERVER_BACK}/films`, movieForm))
+      ?.data;
     return { type: "POST_PELI", payload: response };
   };
 }
@@ -80,7 +75,7 @@ export function getMoviesByGenre(payload) {
   return async function (dispatch) {
     try {
       let filtroGenre = [];
-      let json3 = await axios.get("https://back-cindie.herokuapp.com/films");
+      let json3 = await axios.get(`${SERVER_BACK}/films`);
       json3.data.map((peli) => {
         let genre = peli.Genres;
         genre.forEach((obj) => {
@@ -109,8 +104,7 @@ export function getMoviesByGenre(payload) {
 export function getCountries() {
   return async function (dispatch) {
     try {
-      var json = await axios.get("https://back-cindie.herokuapp.com/countries");
-      console.log('response action', json.data)
+      var json = await axios.get(`${SERVER_BACK}/countries`);
       return dispatch({
         type: GET_COUNTRIES,
         payload: json.data,
@@ -124,7 +118,7 @@ export function getCountries() {
 export function getMoviesByCountry(payload) {
   return async function (dispatch) {
     try {
-      let json3 = await axios.get("https://back-cindie.herokuapp.com/films");
+      let json3 = await axios.get(`${SERVER_BACK}/films`);
       let json4 = json3.data;
       json4 = json4.filter((e) => e.Country.name === payload);
       if (json4.length) {
@@ -171,8 +165,7 @@ export function searchPelicula_Actor(search) {
 export function renderMovieDetails(id) {
   return async function (dispatch) {
     try {
-      let movie = await axios.get(`https://back-cindie.herokuapp.com/films/${id}`);
-      /* console.log(movie.data) */
+      let movie = await axios.get(`${SERVER_BACK}/films/${id}`);
       return dispatch({
         type: MOVIE_DETAIL,
         payload: movie.data,
@@ -186,10 +179,7 @@ export function renderMovieDetails(id) {
 export function signUpFunction(userData) {
   return async function (dispatch) {
     try {
-      console.log("userData", userData);
-      
-      await axios.post("https://back-cindie.herokuapp.com/users/register", userData);
-      
+      await axios.post(`${SERVER_BACK}/users/register`, userData);
     } catch (error) {
       console.log(error);
     }
@@ -199,7 +189,7 @@ export function signUpFunction(userData) {
 export function updateUser(userData) {
   return async function () {
     try {
-      await axios.put("https://back-cindie.herokuapp.com/users/modif", userData);
+      await axios.put(`${SERVER_BACK}/users/modif`, userData);
     } catch (error) {
       console.log("updateUserInformation action", error);
     }
@@ -209,7 +199,7 @@ export function updateUser(userData) {
 export function filterDuration(payload) {
   return async function (dispatch) {
     try {
-      let json3 = await axios.get("https://back-cindie.herokuapp.com/films");
+      let json3 = await axios.get(`${SERVER_BACK}/films`);
       let json4 = json3.data;
       json4 = json4.filter((e) => e.duration === payload);
       if (json4.length) {
@@ -232,9 +222,7 @@ export function filterDuration(payload) {
 export function getFavorites(id) {
   return async function (dispatch) {
     try {
-      var pelisFav = await axios.get(
-        `https://back-cindie.herokuapp.com/users/getFavs/${id}`
-      );
+      var pelisFav = await axios.get(`${SERVER_BACK}/users/getFavs/${id}`);
       return dispatch({
         type: GET_FAV,
         payload: pelisFav.data,
@@ -248,14 +236,11 @@ export function getFavorites(id) {
 export function deleteUserInformation(email) {
   return async function (dispatch) {
     try {
-      await axios.delete(`https://back-cindie.herokuapp.com/users/del`, {
+      await axios.delete(`${SERVER_BACK}/users/del`, {
         data: {
           email: email,
         },
       });
-      // return dispatch({
-      //   type: DELETE_USER_INFORMATION,
-      // });
     } catch (error) {
       console.log("deleteUserInformation", error);
     }
@@ -263,24 +248,21 @@ export function deleteUserInformation(email) {
 }
 
 export function addFavFilm(payload) {
-  return async function (dispatch) {
-    await axios.post("https://back-cindie.herokuapp.com/users/addFav", payload);
+  return async function (dispacth) {
+    await axios.post(`${SERVER_BACK}/users/addFav`, payload);
   };
 }
 
 export function deleteFavFilm(payload) {
   return async function (dispatch) {
     try {
-      console.log("SOY PAYLOAD EN ACTIONS", payload);
-      let response = await axios.delete("https://back-cindie.herokuapp.com/users/delFav", {
+      let response = await axios.delete(`${SERVER_BACK}/users/delFav`, {
         data: { payload },
       });
-
       let toPayload = {
         msg: response,
         id: payload.favDispatch.idPeli,
       };
-
       return dispatch({
         type: DELETE_FAV,
         payload: toPayload.id,
@@ -294,10 +276,7 @@ export function deleteFavFilm(payload) {
 export function getProfileInfo(email) {
   return async function (dispatch) {
     try {
-      console.log("EMAILL EN ACTIONS", email);
-      let response = await axios.get(
-        `https://back-cindie.herokuapp.com/users/byemail/${email}`
-      );
+      let response = await axios.get(`${SERVER_BACK}/users/byemail/${email}`);
       return dispatch({
         type: GET_PROFILE_INFO,
         payload: response.data,
@@ -312,7 +291,7 @@ export function validateSubscription(email) {
   return async function (dispatch) {
     try {
       let response = await axios.get(
-        `https://back-cindie.herokuapp.com/payment/validate/${email}`
+        `${SERVER_BACK}/payment/validate/${email}`
       );
       dispatch({
         type: VALIDATE_SUBSCRIPTION,
@@ -327,10 +306,7 @@ export function validateSubscription(email) {
 export function updateSubscription(props) {
   return async function (dispatch) {
     try {
-      let response = await axios.put(
-        `https://back-cindie.herokuapp.com/users/modif`,
-        props
-      );
+      let response = await axios.put(`${SERVER_BACK}/users/modif`, props);
       return dispatch({
         type: GET_PROFILE_INFO,
         payload: response.data,
@@ -341,12 +317,11 @@ export function updateSubscription(props) {
   };
 }
 
-
 export function subscribe(payload) {
   return async function (dispatch) {
     try {
       const paymentInfo = await axios.post(
-        "https://back-cindie.herokuapp.com/payment/payment",
+        `${SERVER_BACK}/payment/payment`,
         payload
       );
       return dispatch({
@@ -363,7 +338,7 @@ export function paySubscription(payload) {
   return async function (dispatch) {
     try {
       const paymentInfo = await axios.post(
-        "https://back-cindie.herokuapp.com/payment/subscription",
+        `${SERVER_BACK}/payment/subscription`,
         payload
       );
       return dispatch({
@@ -379,7 +354,7 @@ export function paySubscription(payload) {
 export function getPlanInfo() {
   return async function (dispatch) {
     try {
-      let response = await axios.get(`https://back-cindie.herokuapp.com/plans/`);
+      let response = await axios.get(`${SERVER_BACK}/plans/`);
       return dispatch({
         type: GET_PLAN_INFO,
         payload: response.data,
@@ -390,12 +365,10 @@ export function getPlanInfo() {
   };
 }
 
-//comments
-
-export function getComments(payload){
-  return async function(dispatch){
-    try{
-      let response = await axios.get(`https://back-cindie.herokuapp.com/comments/film/${payload}`);
+export function getComments(payload) {
+  return async function (dispatch) {
+    try {
+      let response = await axios.get(`${SERVER_BACK}/comments/film/${payload}`);
       return dispatch({
         type: GET_COMMENTS,
         payload: response.data,
@@ -403,13 +376,13 @@ export function getComments(payload){
     } catch (error) {
       console.log("getComments", error);
     }
-  }
+  };
 }
 
 export function addComment(payload) {
   return async function (dispatch) {
     try {
-      let response = await axios.post(`https://back-cindie.herokuapp.com/comments/`, payload);
+      let response = await axios.post(`${SERVER_BACK}/comments/`, payload);
       return dispatch({
         type: ADD_COMMENT,
         payload: response.data,
@@ -421,13 +394,13 @@ export function addComment(payload) {
 }
 
 //      {}
-// El payload debe tener el id del comentario y 
+// El payload debe tener el id del comentario y
 // lo que se quiere modificar:
 //    - body
 export function updateComment(payload) {
   return async function (dispatch) {
     try {
-      let response = await axios.put(`https://back-cindie.herokuapp.com/comments/modif`, payload);
+      let response = await axios.put(`${SERVER_BACK}/comments/modif`, payload);
       return dispatch({
         type: UPDATE_COMMENT,
         payload: response.data,
@@ -439,17 +412,17 @@ export function updateComment(payload) {
 }
 
 export function deleteComment(id) {
-  console.log("iddd", id)
-  return async function(dispatch) {
-    try{
-      let response = axios.delete("https://back-cindie.herokuapp.com/comments/del", {data: {id}})
+  return async function (dispatch) {
+    try {
+      let response = axios.delete(`${SERVER_BACK}/comments/del`, {
+        data: { id },
+      });
       return dispatch({
         type: DELETE_COMMENT,
-        payload: id
+        payload: id,
       });
+    } catch (error) {
+      console.log(error);
     }
-    catch(error){
-      console.log(error)
-    }
-  }
+  };
 }
