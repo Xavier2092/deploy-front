@@ -19,9 +19,9 @@ const BoxStyle = styled(Box)({
   
 })
 const navlinks = [
-  { name: "Nosotros", href: "http://localhost:3000/about" },
-  { name: "Contacto", href: "http://localhost:3000/contact" },
-  { name: "TyC", href: "http://localhost:3000/terms" },
+  { name: "Nosotros", href: "https://front-cindie.vercel.app/about" },
+  { name: "Contacto", href: "https://front-cindie.vercel.app/contact" },
+  { name: "TyC", href: "https://front-cindie.vercel.app/terms" },
 ];
 
 export default function Footer() {
